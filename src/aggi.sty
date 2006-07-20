@@ -1,0 +1,99 @@
+%%
+%% AG GenomInformatik poster layout
+%%
+%% Kim Roland Rasmussen
+%% September 2004
+%%
+
+%%
+%% The following commands are defined:
+%%
+%%	\aggigreen		-	color, matches the TechFak ``corporate'' color
+%%	\aggilogo		-	path to AG GI logo, logo goes in upper left corner
+%%	\aggiurl		-	URL to AG GI, used in footer
+%%	\aggilogowidth	-	width of logo in upper left corner
+%%	\aggiheader		-	produces header
+%%	\aggifooter		-	produces footer
+%%
+%%	\mytitle		-	set the poster title
+%%	\myauthors		-	set the authors
+%%	\mythanks		-	set the ``thanks'' for authors
+%%	\myfigure		-	similar to figure float, but works in multicol
+%%	\mytable		-	similar to table float, but works in multicol
+%%
+%%	\bottomglue		-	INTERNAL
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Define colors
+\definecolor{aggigreen}{rgb}{0,.6,.2} % TechFak, Bielefeld University.
+\definecolor{highlight}{rgb}{0,.5,1}
+
+
+%% Define commands
+\newcommand*{\aggilogo}{aggi_logo.eps}
+\newcommand*{\aggiurl}{\tt{http://gi.cebitec.uni-bielefeld.de/assb/chiplayout}}
+\newcommand*{\aggilogowidth}{240mm}
+
+\newcommand*{\aggititle}{\VERYHuge\bfseries{Insert title}}
+\newcommand*{\mytitle}[1]{%
+	\renewcommand{\aggititle}{#1}%
+}
+
+\newcommand*{\aggiauthors}{Insert authors}
+\newcommand*{\myauthors}[1]{%
+	\renewcommand{\aggiauthors}{#1}%
+}
+
+\newcommand*{\aggithanks}{Insert thanks}
+\newcommand*{\mythanks}[1]{%
+	\renewcommand{\aggithanks}{#1}%
+}
+
+\newcommand*{\bottomglue}{\mbox{\rule{0em}{1ex}}}
+
+\newcommand*{\aggiheader}{%
+	\noindent%
+	\bottomglue%
+	\mbox{\parbox[b]{\aggilogowidth}{%
+		\includegraphics[width=190mm,clip=true]{\aggilogo}\\\bottomglue%
+	}}%
+	\mbox{\parbox[b]{\fill}{%
+		\begin{tabular}{l}%
+			\aggititle
+		\end{tabular}\\\bottomglue%
+	}}%
+	\\
+	\mbox{\parbox{\aggilogowidth}{\hfill}}%
+	\mbox{\parbox{\fill}{%
+		\begin{tabular}{l}%
+			\aggiauthors\\
+			\rule{0em}{.3ex}\\
+			\aggithanks\\
+		\end{tabular}%
+	}}%
+}
+
+\newcommand*{\aggifooter}{%
+	\vfill%
+	\noindent\colorbox{aggigreen}{%
+	    \parbox{\textwidth}{%
+	        \center%
+	        \vspace{1ex}%
+	        \Large%
+	        \textbf{\color{white}For more information please visit \aggiurl}%
+	        \vspace{1ex}%
+	    }%
+	}
+}
+
+\makeatletter
+\newenvironment{mytable}
+  {\def\@captype{table}}
+  {}
+
+\newenvironment{myfigure}
+  {\def\@captype{figure}}
+  {}
+\makeatother
