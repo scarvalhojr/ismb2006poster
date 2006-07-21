@@ -78,14 +78,16 @@
 
 \setlength{\parskip}{5mm}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{\textcolor{aggigreen}{Introduction}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \noindent Oligonucleotide microarrays consist of small DNA fragments
-(\emph{probes}) chemically synthesized at specific locations (\emph{spots}) on
-a coated quartz surface. Probes are typically 25 nt long and are synthesized
+(\emph{probes}) chemically synthesized at specific locations (\emph{spots}) of
+a solid surface. Probes are typically 25-60~nt long and are synthesized
 in parallel, in a series of repetitive steps. Each step appends a particular
 nucleotide to selected regions of the chip. Selection occurs by exposure to
-light with the help of a photolithographic mask.
+light with the help of a photolithographic mask or micromirror arrays.
 
 \noindent Formally, we have a set of probes
 $\mathcal{P} = \{p_{1}, p_{2}, ... p_{n}\}$ that are produced by a series of
@@ -94,20 +96,20 @@ the addition of a particular nucleotide $\ds_{t} \in \{A, C, G, T\}$ to a subset
 of~$\mathcal{P}$. The sequence of nucleotides added in each step
 $\ds = \ds_{1} \ds_{2} \ldots \ds_{T}$ is called \emph{deposition sequence}.
 
-\noindent In general, a probe can be \emph{embedded} within $\mathcal{S}$ in
-several ways. An embedding of $p_k$ is a $T$-tuple
+\noindent In general, a probe can be \textcolor{highlight}{embedded} within
+$\mathcal{S}$ in several ways. An embedding of $p_k$ is a $T$-tuple
 $\varepsilon_{k} = (e_{k,1}, e_{k,2}, ... e_{k,T})$ in which $e_{k,t} = 1$ if
-probe $p_{k}$ receives nucleotide $\ds_t$ (at step~$t$), or 0 otherwise
-(Figure~\ref{fig:masking_process}).
+probe $p_{k}$ receives nucleotide $\ds_t$, or 0 otherwise.
 
 \begin{myfigure}
 \vspace*{4ex}
-\centerline{\includegraphics[width=700pt]{chip}}
-\caption{Synthesis of a hypothetical 3$\times$3 chip. Left: chip
-layout and the 3~nt probe sequences. Center: deposition
-sequence and probe embeddings. Right: first four resulting masks.}
+\centerline{\includegraphics[width=750pt]{chip}}
+\caption{Synthesis of a hypothetical 3$\times$3 chip in 12 steps. Left: chip
+layout and the 3~nt probe sequences. Center: deposition sequence and probe
+embeddings. Right: first four resulting masks (masks 5 to 12 not shown)
+}
 \label{fig:masking_process}
-\vspace*{4ex}
+\vspace*{3ex}
 \end{myfigure}
 
 \noindent Due to diffraction of light or internal reflection, untargeted probes
@@ -115,162 +117,192 @@ can be accidentally activated. This is more likely to occur near the borders
 between masked and unmasked spots -- hence the term
 \textcolor{highlight}{border conflict}.
 
-\subsection*{Border Length}
-
-\noindent The \emph{Border Length Minimization Problem}~\cite{HANNENHALLI02} was
-the first formal definition of the problem of unintended illumination. It aims
-at finding an arrangement of the probes together with their embeddings with
+\noindent The \emph{Border Length Minimization Problem}~\cite{HANNENHALLI02}
+aims at finding an arrangement of the probes together with their embeddings with
 minimum border conflicts.
 
-\noindent The \emph{border length}~$\mathcal{B}_t$ of mask~$m_{t}$ is defined as
-the number of borders shared by masked and unmasked spots at masking step~$t$.
-The total border length of a given arrangement is the sum of border lengths over
-all masks. The initial four masks shown in Figure~\ref{fig:masking_process} have
-$\mathcal{B}_1 = 4$, $\mathcal{B}_2 = 6$, $\mathcal{B}_3 = 6$ and
-$\mathcal{B}_4 = 4$. The total border length of that arrangement is 50 (masks 5
-to 12 not shown).
+\noindent The \textcolor{highlight}{border length}~$\mathcal{B}_t$ of
+a mask~$m_{t}$ is defined as the number of borders separating masked and
+unmasked spots at synthesis step~$t$. The total border length of an arrangement
+is the sum of border lengths of all masks. The four masks shown in
+Figure~\ref{fig:masking_process} have $\mathcal{B}_1 = 4$, $\mathcal{B}_2 = 6$,
+$\mathcal{B}_3 = 6$ and $\mathcal{B}_4 = 4$. The total border length of that
+arrangement is 50.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{\textcolor{aggigreen}{Conflict Index}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\noindent We are more interested in estimating the risk of synthesizing a faulty
-probe at a given spot. Additionally, two practical considerations need to be
-taken into account ~\cite{KAHNG03}:
+\noindent We are more interested in estimating the risk of synthesizing a
+particular probe incorrectly. Additionally, we want to take into account that:
 \begin{itemize}
-\item[a)] stray light might activate not only adjacent neighbors but also probes
-that lie as far as three cells away from the targeted spot;
-\item[b)] imperfections produced in the middle of a probe are more harmful than
-in its extremities.
+\item[a)] imperfections produced in the middle of a probe are more harmful than
+in its extremities,
+\item[b)] stray light might activate probes that lie as far as three cells away
+from the targeted spot.
 \end{itemize}
 
-\noindent This motivates the following definition of the \emph{conflict
-index}~$\mathcal{C}(p)$ of a probe~$p$~\cite{CARVALHO06}. First we define a
-distance-dependent weighting function to account for observation a):
+\noindent This motivates the following definition of the
+\textcolor{highlight}{conflict index}~$\mathcal{C}(p)$ of a probe~$p$:
 %%
-\begin{equation}
-\label{eq:dist_weight}
-\delta(p,p',t) :=
-\left\{
-        \begin{array}{ll}
-                (d(p,p'))^{-2} & \mbox{if $p'$ is unmasked at step $t$}, \\
-                0 & \mbox{otherwise}, \\
-        \end{array}
-\right.
-\end{equation}
+\[
+\mathcal{C}(p) := \sum_{t=1}^{T} \Bigl( \omega(p,t) \sum_{p'} \delta(p,p',t) \Bigr),
+\]
 %%
-where $d(p,p')$ is the Euclidean distance between the spots of~$p$ and~$p'$.
-We restrict the support of $\delta(p,p',\cdot)$ to those $p'\neq p$ that are in
-a $7\times 7$ grid centered around $p$.
-
-\noindent We also define position-dependent weights to account for observation
-b):
-%%
-\begin{equation}\label{eq:pos_mult}
-\omega(p,t) :=
-\left\{
-        \begin{array}{ll}
-                c \cdot \exp{\left(\theta \cdot \lambda(p,t)\right)} & \mbox{if $p$ is masked at step $t$}, \\
-                0 & \mbox{otherwise}, \\
-        \end{array}
-\right.
-\end{equation}
-%%
-where $c>0$ and $\theta>0$ are constants (we set $\theta := 5/\ell_p$ and
-$c := 1/\exp(\theta)$),
-%%
-\begin{equation}\label{eq:base_pos}
-  \lambda(p,t) := 1 + \min(b_{p,t},\ell_{p} - b_{p,t}),
-\end{equation}
-%%
-$b_{p,t}$ denotes the number of nucleotides synthesized within~$p$ up to and
-including step~$t$, and $\ell_{p}$ is the length of probe~$p$.
-
-\noindent We now define the conflict index of a probe $p$ as
-\begin{equation}
-\label{eq:conf_idx}
-\mathcal{C}(p) := \sum_{t=1}^{T} \Bigl( \omega(p,t) \sum_{p'} \delta(p,p',t) \Bigr).
-\end{equation}
+where $\omega(p,t)$ are position-dependent weights (observation a) and
+$\delta(p,p',t)$ are distance-dependent weights (observation b) defined as
+follows.
 
 %% %%%%%%%%%%%%%%%%%%%%%
 %% Desired end of column
 %% %%%%%%%%%%%%%%%%%%%%%
 
+\[
+\omega(p,t) :=
+\left\{
+\begin{array}{ll}
+c \cdot \exp{\left(\theta \cdot \lambda(p,t)\right)} & \mbox{if $p$ is masked at step $t$}, \\
+0 & \mbox{otherwise}, \\
+\end{array}
+\right.
+\]
+%%
+where $c>0$ and $\theta>0$ are constants,
+%%
+\[
+\lambda(p,t) := 1 + \min(b_{p,t},\ell_{p} - b_{p,t}),
+\]
+%%
+$b_{p,t}$ denotes the number of nucleotides synthesized within~$p$ up to and
+including step~$t$, and $\ell_{p}$ is the length of probe~$p$. We set
+$\theta := 5/\ell_p$ and $c := 1/\exp(\theta)$; see
+Figure~\ref{fig:conflictindex}, left.
+%%
+\[
+\delta(p,p',t) :=
+\left\{
+\begin{array}{ll}
+(d(p,p'))^{-2} & \mbox{if $p'$ is unmasked at step $t$}, \\
+             0 & \mbox{otherwise}, \\
+\end{array}
+\right.
+\]
+%%
+where $d(p,p')$ is the Euclidean distance between the spots of~$p$ and~$p'$.
+We restrict the support of $\delta(p,p',\cdot)$ to those $p'\neq p$ inside
+a $7\times 7$ grid centered on $p$ (Figure~\ref{fig:conflictindex}, right).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{\textcolor{aggigreen}{Quadratic Assignment Problem (QAP)}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \noindent The QAP is a classical combinatorial optimization problem that can be
 stated as follows. Given $n \times n$ real-valued matrices $F = (f_{ij})\geq 0$ and $D = (d_{kl})\geq 0$, find a permutation $\pi$ of $\{1, 2, \ldots n\}$ such that
-\begin{equation}\label{eq:qap_def}
+\[
   \sum_{i=1}^{n} \sum_{j=1}^{n}\,  f_{ij} \cdot d_{\pi(i)\pi(j)} \to \min.
-\end{equation}
+\]
 
-\noindent One of its major applications is to model the facility location
-problem where $n$ facilities are assigned to $n$ locations: $F$ is called
-the flow matrix as $f_{ij}$ represents the flow of materials from facility $i$
-to facility $j$, while $D$ is called the distance matrix, as $d_{kl}$ gives the
-distance between locations $k$ and $l$. The optimal permutation $\pi$ defines a
-one-to-one assignment of facilities to locations with minimum cost.
+\noindent One of its applications is to model the \emph{Facility Location
+Problem} where $n$ facilities must be assigned to $n$ locations: $F$ is called
+\textcolor{highlight}{flow matrix} as $f_{ij}$ represents the flow of materials
+from facility $i$ to facility $j$; $D$ is called
+\textcolor{highlight}{distance matrix} as $d_{kl}$ gives the distance between
+locations $k$ and $l$. Permutation $\pi$ defines an assignment of facilities to
+locations with minimum cost.
 
 \subsection*{QAP Formulation of Probe Placement}
 
-\noindent The probe placement problem can be seen as an instance of the QAP,
-where we want to find a one-to-one correspondence between probes and spots.
+\noindent The probe placement problem is an instance of the
+QAP~\cite{CARVALHO06}: one wants to find a one-to-one correspondence between
+probes and spots minimizing the total border length or sum of conflict indices.
 
-\noindent We assume that all probes have a single pre-defined embedding in order
-to force a one-to-one relationship (considering all possible embeddings would
-still lead to a quadratic integer programming problem). If we have more spots
-available than probes to place, we add enough ``empty'' probes and define their
-weight functions appropriately.
+\noindent All probes are assumed to have a single pre-defined embedding in order
+to force a one-to-one relationship. When there are more spots than probes, we
+add ``empty'' probes and define their weights appropriately.
 
-\noindent Our goal is to design a microarray minimizing the sum of conflict
-indices over all probes~$k$, i.e., $\sum_{k} \mathcal{C}(k) \to \min$.
-
-\noindent The ``flow'' $f_{ij}$ between spots $i$ and $j$ depends on their
-Euclidean distance $d(i,j)$ on the array:
-\begin{equation}
-  f_{ij} := \left\{ \begin{array}{ll}
+\noindent For \textcolor{highlight}{conflict index minimization}, the ``flow''
+$f_{ij}$ between spots $i$ and $j$ is:
+%%
+\[
+f_{ij} := \left\{ \begin{array}{ll}
       (d(i,j))^{-2} & \mbox{if spot $j$ is ``near'' spot $i$}, \\
       0 & \mbox{otherwise}. \\
     \end{array} \right.
-\end{equation}
+\]
 %%
-where ``near'' means that spot~$j$ is at most three cells away from~$i$. For
-Border Length Minimization, we set $f_{ij}:=1$ if spots $i$ and $j$ are direct
-neighbors, and $f_{ij}:=0$ otherwise.
+where ``near'' means that spot~$j$ is at most three cells away from~$i$.
 
-\noindent The ``distance'' $d_{kl}$ between probes $k$ and $l$ depends on the
-(weighted) Hamming distance of their embeddings. To account for possible
-``empty'' probes, we set $d_{kl}:=0$ if $k$ or $l$ or both refer to an empty
-probe. Otherwise, we set
+\noindent The ``distance'' $d_{kl}$ between probes $k$ and $l$ is
+%%
 \[ d_{kl} := \sum_{t=1}^T\, d_{klt}, \]
+%%
 where $d_{klt}$ is the potential contribution of probe $l$'s embedding to the
-failure risk of probe $p_k$ in the $t$-th synthesis step. According to the
-conflict index model,
+failure risk of probe $p_k$ in the $t$-th synthesis step:
+%%
 \[ d_{klt}  = \left\{ \begin{array}{ll}
     c \cdot \exp(\theta \cdot \lambda(p_k,t)) 
-    & \mbox{if $p_k$ is masked and $p_l$ unmasked in step $t$,}\\
+    & \mbox{if $p_k$ is masked and $p_l$ unmasked}\\
+    & \mbox{in step $t$,} \\
     0
     & \mbox{otherwise.}
   \end{array} \right.
 \]
-In the case of Border Length Minimization, where $\theta=0$ and $c=1/2$, we
-obtain that $d_{kl} + d_{lk} = H_{kl} = H_{lk}$, where $H_{kl}$ denotes the
-Hamming distance between the embeddings of probes $p_k$ and $p_l$.
+%%
+
+\noindent For \textcolor{highlight}{border length minimization} we set
+$f_{ij}:=1$ if spots $i$ and $j$ are direct neighbors, $f_{ij}:=0$ otherwise;
+and $\theta=0$ and $c=1/2$.
 
 %% %%%%%%%%%%%%%%%%%%%%%
 %% Desired end of column
 %% %%%%%%%%%%%%%%%%%%%%%
 
+\begin{myfigure}
+\centerline{
+%%
+\begin{picture}(370,220)
+\small{\input{position_weights}}
+\end{picture}
+%%
+\begin{picture}(370,220)
+\put(-10,0){\makebox(370,220){
+\begin{minipage}{160pt}
+\centerline{\small{
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+0.06 & 0.08 & 0.10 & 0.11 & 0.10 & 0.08 & 0.06 \\ \hline
+0.08 & 0.13 & 0.20 & 0.25 & 0.20 & 0.13 & 0.08 \\ \hline
+0.10 & 0.20 & 0.50 & 1.00 & 0.50 & 0.20 & 0.10 \\ \hline
+0.11 & 0.25 & 1.00 & \textcolor{aggigreen}{$p$} & 1.00 & 0.25 & 0.11 \\ \hline
+0.10 & 0.20 & 0.50 & 1.00 & 0.50 & 0.20 & 0.10 \\ \hline
+0.08 & 0.13 & 0.20 & 0.25 & 0.20 & 0.13 & 0.08 \\ \hline
+0.06 & 0.08 & 0.10 & 0.11 & 0.10 & 0.08 & 0.06 \\ \hline
+\end{tabular}}}
+\end{minipage}}}
+\end{picture}
+%%
+}
+\caption{Values of $\omega$ and $\delta$ for a typical Affymetrix chip
+with 25~nt probes. Left: values of $\omega(p,t)$ on the y-axis for each value of
+$b_{p,t}$ on the x-axis, assuming that $p$ is masked at step $t$. Right:
+approximate values of $\delta(p,p',t)$ for a probe~$p$ in the center and
+neighbors $p'$, assuming that $p'$ is unmasked.}
+\label{fig:conflictindex}
+\end{myfigure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{\textcolor{aggigreen}{Results}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \noindent The QAP is known to be NP-hard and particularly hard to solve in
 practice. Instances of size larger than $n = 20$ are generally considered to be
 impossible to solve to optimality. Nevertheless, our formulation is of interest
-because we can now use existing QAP heuristics to design the layout of
-microarrays minimizing either the sum of border lengths or conflict indices.
+because existing \textcolor{highlight}{QAP heuristics} can now be used to solve
+the placement problem.
 
-\noindent We used GRASP with path-relinking~\cite{OLIVEIRA04}, a general QAP
-heuristic, to design small artificial microarrays, and compared with the
-results produced by Row-epitaxial, the best known placement
-algorithm~\cite{CARVALHO06} (\ref{tab:graspr_reptx}).
+\noindent We used \textcolor{highlight}{GRASP with path-relinking}~\cite{OLIVEIRA04}
+to design small artificial microarrays, and compared them with the layouts
+produced by \textcolor{highlight}{Row-epitaxial}~\cite{KAHNG03}, the best known
+placement algorithm (Table \ref{tab:graspr_reptx}).
 
 \begin{mytable}
 \vspace*{2ex}
@@ -281,8 +313,8 @@ Row-epitaxial and GRASP with path-relinking. Reported times in seconds.
 \begin{tabular}{c||rr|rr||rr|rr|}
      & \multicolumn{4}{|c||}{Border length minimization} & \multicolumn{4}{c|}{Conflict index minimization}                                      \\ \cline{2-9}
      & \multicolumn{2}{|c|}{Row-epitaxial} & \multicolumn{2}{c||}{GRASP-PR} & \multicolumn{2}{c|}{Row-epitaxial} & \multicolumn{2}{c|}{GRASP-PR} \\ \cline{2-9}
-Chip & Total     &                          & Total     &                      & Average     &                     & Average  &                  \\
-size & b. length & Time                     & b. length & Time                 & c. index    & Time                & c. index & Time             \\ \hline
+Chip & Total     &      & Total     &      & Average  &      & Average  &      \\
+size & b. length & Time & b. length & Time & c. index & Time & c. index & Time \\ \hline
 $6\times 6$   & 1\,714.60 & 0.01 & 1\,672.20 &   2.73 & 495.15 & 0.05 & 467.08 &   3.68 \\
 $7\times 7$   & 2\,354.60 & 0.02 & 2\,332.60 &   6.43 & 521.90 & 0.07 & 489.32 &   8.84 \\
 $8\times 8$   & 3\,123.80 & 0.03 & 3\,099.13 &  12.49 & 551.84 & 0.09 & 515.69 &  19.48 \\
@@ -294,12 +326,16 @@ $12\times 12$ & 7\,086.20 & 0.11 & 7\,159.80 & 152.42 & 598.21 & 0.12 & 561.21 &
 \vspace*{4ex}
 \end{mytable}
 
-Because of the large number of probes on industrial microarrays, it is not
-feasible to use a QAP algorithm to design an entire microarray chip, although it
-is possible to use it on small sub-regions of a chip. This opens up the way for
-two alternatives: 1) combine it with a partitioning algorithm, or 2) use it to
-improve an existing layout, iteratively, by relocating probes inside a
-sliding-window~\cite{CARVALHO06}.
+\noindent Because of the large number of probes on industrial microarrays, it is
+not feasible to use a QAP algorithm to design an entire microarray, but we
+showed that it is possible to use it on small sub-regions of a chip. We see two
+applications for this approach:
+\begin{itemize}
+\item[1)] use it combined with a \emph{partitioning algorithm} that partitions
+the placement problem into smaller sub-problems;
+\item[2)] use it to improve an existing layout, iteratively, by relocating
+probes inside a \emph{sliding-window} (with small changes to the QAP algorithm).
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% Bibliography
@@ -315,15 +351,15 @@ de Carvalho Jr., S., Rahmann, S.:
 Microarray Layout as a Quadratic Assignment Problem.
 In {\it German Conference on Bioinformatics (GCB)} (2006), LNI, Springer. To appear.
 
-\bibitem{KAHNG03} Kahng, A. B., Mandoiu, I., Pevzner, P., Reda, S., Zelikovsky, A.:
-Engineering a scalable placement heuristic for DNA probe arrays.
-Proc. of the Seventh Annual Int. Conf. on Computational Molecular Biology (2003) 148--83
-
 \bibitem{OLIVEIRA04} Oliveira,C.A.S., Pardalos,P.M. and Resende,M.G.C. (2004):
 GRASP with path-relinking for the quadratic assignment
 problem. In Ribeiro,C.C. and Martins,S.L. (eds.), {\it Efficient and
 Experimental Algorithms}, LNCS, {\bf 3059},
 356--368, Springer-Verlag.
+
+\bibitem{KAHNG03} Kahng, A. B., Mandoiu, I., Pevzner, P., Reda, S., Zelikovsky, A.:
+Engineering a scalable placement heuristic for DNA probe arrays.
+Proc. of the Seventh Annual Int. Conf. on Computational Molecular Biology (2003) 148--83
 
 \end{thebibliography}
 
